@@ -9,6 +9,7 @@
   "author": "Angela Lin linyh0207@gmail.com",
   "license": "ISC",
   "dependencies": {
+    "ejs": "^2.6.1",
     "express": "^4.16.3"
   }
 }
