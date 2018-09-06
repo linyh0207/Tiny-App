@@ -49,6 +49,12 @@ app.post("/urls", (req, res) => {
   res.redirect(`http://localhost:8080/urls/${[randomId]}`);
 });
 
+app.get("/u/:shortURL", (req, res) => {
+  let shortUrlKey = req.params['shortURL'];
+  let longURL = urlDatabase[shortUrlKey];
+  res.redirect(longURL);
+});
+
 function generateRandomString() {
   var text = "";
   var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
