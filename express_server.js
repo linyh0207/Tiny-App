@@ -79,6 +79,14 @@ app.post("/logout", (req, res) => {
   res.redirect("/urls");
 })
 
+app.get("/register", (req, res) => {
+  res.render("reg");
+})
+
+app.post("/register", (req, res) => {
+  const {username, password} = req.body;
+})
+
 function generateRandomString() {
   var text = "";
   var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -86,3 +94,5 @@ function generateRandomString() {
     text += possible.charAt(Math.floor(Math.random() * possible.length));
   return text;
 }
+
+
