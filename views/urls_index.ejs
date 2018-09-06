@@ -10,6 +10,7 @@
     <% for (let shortUrl in urls) { %>
     <ol>
     <%= shortUrl %> : <%= urls[shortUrl] %>
+    <a href = '/urls/<%=shortUrl%>'>Edit</a>
     <form method="POST" action="/urls/<%= shortUrl %>/delete">
     <button type="submit">Delete</button>
     </form>
