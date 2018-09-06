@@ -84,7 +84,14 @@ app.get("/register", (req, res) => {
 })
 
 app.post("/register", (req, res) => {
-  const {username, password} = req.body;
+  let {email, password } =req.body
+  let userRandomID = generateRandomString();
+  users[userRandomID] = {
+      id: [userRandomID],
+      email: email,
+      password: password }
+  res.cookie("user_id", users[userRandomID].id);
+  res.redirect("/urls");
 })
 
 function generateRandomString() {
@@ -94,6 +101,7 @@ function generateRandomString() {
     text += possible.charAt(Math.floor(Math.random() * possible.length));
   return text;
 }
+
 
 const users = {
   "userRandomID": {
