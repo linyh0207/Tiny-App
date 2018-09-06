@@ -1,0 +1,14 @@
+{
+  "name": "tinyapp",
+  "version": "1.0.0",
+  "description": "A full stack web app built with Node and Express that allows users to shorten long URLs.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Angela Lin linyh0207@gmail.com",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.16.3"
+  }
+}
