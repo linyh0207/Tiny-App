@@ -31,19 +31,19 @@ app.get("/hello", (req, res) => {
 
 app.get("/urls", (req, res) => {
   let templateVars = { urls: urlDatabase,
-   username: req.cookies["username"]};
+   username: req.cookies["user_id"]};
   res.render("urls_index", templateVars);
 });
 
 app.get("/urls/new", (req, res) => {
-  let templateVars = {username: req.cookies["username"]};
+  let templateVars = {username: req.cookies["user_id"]};
   res.render("urls_new", templateVars);
 });
 
 app.get("/urls/:id", (req, res) => {
   let templateVars = {
     shortURL: req.params.id,
-    username: req.cookies["username"], };
+    username: req.cookies["user_id"], };
   res.render("urls_show", templateVars);
 });
 
@@ -70,12 +70,12 @@ app.post("/urls/:id", (req, res) => {
 })
 
 app.post("/login", (req, res) => {
-  res.cookie('username', req.body.username);
+  // res.cookie('username', req.body.username);
   res.redirect("/urls");
 })
 
 app.post("/logout", (req, res) => {
-  res.clearCookie('username', req.body.username);
+  res.clearCookie("user_id");
   res.redirect("/urls");
 })
 
@@ -86,12 +86,22 @@ app.get("/register", (req, res) => {
 app.post("/register", (req, res) => {
   let {email, password } =req.body
   let userRandomID = generateRandomString();
-  users[userRandomID] = {
-      id: [userRandomID],
-      email: email,
-      password: password }
-  res.cookie("user_id", users[userRandomID].id);
-  res.redirect("/urls");
+
+  if (!email || !password){
+    return res.status(400).send("Something is missing! ")}
+
+    for (let key in users){
+    if (users[key].email === email ) {
+    return res.status(400).send("Sorry...username already taken")
+      } else {
+        users[userRandomID] = {
+          id: userRandomID,
+          email: email,
+          password: password }
+          res.cookie("user_id", users[userRandomID].id);
+          res.redirect("/urls");
+        }
+      }
 })
 
 function generateRandomString() {
