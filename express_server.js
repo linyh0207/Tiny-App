@@ -3,6 +3,10 @@ var app = express();
 var PORT = 8080;
 var cookieParser = require('cookie-parser')
 const bodyParser = require("body-parser");
+const bcrypt = require('bcrypt');
+const password = "purple-monkey-dinosaur"; // you will probably this from req.params
+const hashedPassword = bcrypt.hashSync(password, 10);
+
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser())
