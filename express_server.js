@@ -50,7 +50,7 @@ app.get("/urls/:id", (req, res) => {
 app.post("/urls", (req, res) => {
   let randomId = generateRandomString()
   urlDatabase[randomId] = req.body.longURL;
-  res.redirect("urls");
+  res.redirect("/urls");
 });
 
 app.get("/u/:shortURL", (req, res) => {
