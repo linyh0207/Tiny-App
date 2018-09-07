@@ -1,14 +1,17 @@
+<header>
+
 <% if (!username) { %>
-<form method="POST" action="/login">
-<label for="username">Username</label>
-<input id="username" type="text" name="username" placeholder="username">
-<button type="submit">Submit</button> </form>
+  <a href = "http://localhost:8080/login">Login</a>
+   <a href = "http://localhost:8080/register">Register</a>
 
 <% }  else { %>
 
-<%= username %>
+<%= username.email %>
 <form method="POST" action="/logout">
 <button type="submit">logout</button> </form>
 
+
 <% } %>
 
+
+</header>

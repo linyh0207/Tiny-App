@@ -50,7 +50,7 @@ app.get("/urls/:id", (req, res) => {
 app.post("/urls", (req, res) => {
   let randomId = generateRandomString()
   urlDatabase[randomId] = req.body.longURL;
-  res.redirect(`http://localhost:8080/urls/${[randomId]}`);
+  res.redirect("urls");
 });
 
 app.get("/u/:shortURL", (req, res) => {
@@ -70,8 +70,19 @@ app.post("/urls/:id", (req, res) => {
 })
 
 app.post("/login", (req, res) => {
-  // res.cookie('username', req.body.username);
-  res.redirect("/urls");
+  let {email, password } =req.body;
+
+if (!email || !password ){
+    return res.status(403).send("Something is missing! ")
+    }
+
+ for (let key in users) {
+    if (users[key].email === email & users[key].password === password) {
+          res.cookie("user_id", users[key].id);
+          return res.redirect("/");
+       }
+    }
+  return res.status(403).send("The username or password is incorrect.");
 })
 
 app.post("/logout", (req, res) => {
@@ -85,24 +96,37 @@ app.get("/register", (req, res) => {
 
 app.post("/register", (req, res) => {
   let {email, password } =req.body
-  let userRandomID = generateRandomString();
 
-  if (!email || !password){
-    return res.status(400).send("Something is missing! ")}
+  if (email === "" || password === ""){
+    res.status(400).send("Something is missing! ")
+    }
 
-    for (let key in users){
-    if (users[key].email === email ) {
-    return res.status(400).send("Sorry...username already taken")
-      } else {
-        users[userRandomID] = {
-          id: userRandomID,
-          email: email,
-          password: password }
-          res.cookie("user_id", users[userRandomID].id);
-          res.redirect("/urls");
-        }
+  for (let key in users){
+      if (users[key].email === email ) {
+        return res.status(400).send("Sorry...username already taken")
       }
+    }
+
+    let userRandomID = generateRandomString();
+        users[userRandomID] = {
+        id: userRandomID,
+        email: email,
+        password: password
+        }
+
+      res.cookie("user_id", users[userRandomID]);
+      res.redirect("/urls");
 })
+
+
+app.get("/login", (req, res) => {
+  let templateVars = {
+   username: req.cookies["user_id"]};
+  res.render("login", templateVars);
+})
+
+
+
 
 function generateRandomString() {
   var text = "";
