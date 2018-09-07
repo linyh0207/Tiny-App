@@ -42,6 +42,7 @@ function urlsForUser(id){
     for (let key in urlDatabase){
       if ( id === urlDatabase[key].userID){
         newDatabase[key] = urlDatabase[key];
+        newDatabase[key].userID = urlDatabase[key].userID;
         newDatabase[key].longURL = urlDatabase[key].longURL;
       }
     }
