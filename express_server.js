@@ -4,14 +4,10 @@ var PORT = 8080;
 var cookieParser = require('cookie-parser')
 const bodyParser = require("body-parser");
 const bcrypt = require('bcrypt');
-const password = "purple-monkey-dinosaur"; // you will probably this from req.params
-const hashedPassword = bcrypt.hashSync(password, 10);
-
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser())
 app.set("view engine", "ejs");
-
 
 var urlDatabase = {
   "b2xVn2": {
@@ -142,11 +138,14 @@ if (!email || !password ){
     }
 
  for (let key in users) {
-    if (users[key].email === email & users[key].password === password) {
+    if (users[key].email === email) {
+      if (bcrypt.compareSync(password, users[key].password)){
+      // if users[key].password === password) {
           res.cookie("user_id", users[key].id);
           return res.redirect("/");
        }
     }
+  }
   res.status(403).send("The username or password is incorrect.");
 })
 
@@ -171,14 +170,15 @@ app.post("/register", (req, res) => {
         return res.status(400).send("Sorry...username already taken")
       }
     }
+    const hashedpassword = bcrypt.hashSync(password, 10);
 
     let userRandomID = generateRandomString();
         users[userRandomID] = {
         id: userRandomID,
         email: email,
-        password: password
+        password: hashedpassword
         }
-
+console.log(users)
       res.cookie("user_id", users[userRandomID]);
       res.redirect("/urls");
 })
