@@ -73,19 +73,7 @@ let loggedIn = urlsForUser(req.cookies["user_id"]);
     };
     res.render("urls_index", templateVars);
   }
-  return res.status(403).send("Please log in / register first.")
-});
-
-
-
-
-
-app.get("/urls.json", (req, res) => {
-  res.json(urlDatabase);
-});
-
-app.get("/hello", (req, res) => {
-  res.send("<html><body>Hello <b>World</b></body></html>\n");
+  res.status(403).send("Please log in / register first.")
 });
 
 app.get("/urls/new", (req, res) => {
@@ -93,15 +81,25 @@ app.get("/urls/new", (req, res) => {
     let templateVars = {username: users[req.cookies["user_id"]]};
     res.render("urls_new", templateVars);
     }
-  return res.redirect("/login");
+  res.redirect("/login");
 });
 
 app.get("/urls/:id", (req, res) => {
   if (req.cookies["user_id"] === urlDatabase[req.params.id].userID){
-  let templateVars = {
-    shortURL: req.params.id,
-    username: users[req.cookies["user_id"]]};
-  res.render("urls_show", templateVars);
+    let templateVars = {
+      shortURL: req.params.id,
+      username: users[req.cookies["user_id"]]};
+    res.render("urls_show", templateVars);
+  }
+  res.status(403).send("Please log in / register first.")
+});
+
+app.get("/u/:id", (req, res) => {
+  for(let key in urlDatabase){
+    if (req.params['id'] === key){
+      let longURL = urlDatabase[key].longURL;
+      res.redirect(longURL);
+    }
   }
 });
 
@@ -113,14 +111,9 @@ app.post("/urls", (req, res) => {
       urlDatabase[randomId].longURL = req.body.longURL;
     res.redirect("urls");
   }
-  res.status(403).send("Unauthorized access, please log in first!");
+  res.status(403).send("Please log in / register first.");
 });
 
-app.get("/u/:shortURL", (req, res) => {
-  let shortUrlKey = req.params['shortURL'];
-  let longURL = urlDatabase[shortUrlKey].longURL;
-  res.redirect(longURL);
-});
 
 app.post("/urls/:id/delete", (req,res) => {
 if (req.cookies["user_id"] === urlDatabase[req.params.id].userID){
@@ -150,7 +143,7 @@ if (!email || !password ){
           return res.redirect("/");
        }
     }
-  return res.status(403).send("The username or password is incorrect.");
+  res.status(403).send("The username or password is incorrect.");
 })
 
 app.post("/logout", (req, res) => {
@@ -196,3 +189,12 @@ app.get("/login", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
+
+app.get("/urls.json", (req, res) => {
+  res.json(urlDatabase);
+});
+
+
+// app.get("/hello", (req, res) => {
+//   res.send("<html><body>Hello <b>World</b></body></html>\n");
+// });
