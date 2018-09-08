@@ -150,22 +150,39 @@ app.post("/urls/:id", (req, res) => {
 
 app.post("/login", (req, res) => {
 
-  let {email, password } = req.body;
 
+ let {email, password } = req.body;
+
+  //if the username or email is empty
   if (!email || !password ){
     res.status(403).send("Something is missing! ")
-      } else {};
-
-      for (let key in users) {
-        if (users[key].email === email){
-          if (bcrypt.compareSync(password, users[key].password)){
-              req.session.user_id = users[key].id;
-              res.redirect("/urls");
-      } else {
-      res.status(403).send("The username or password is incorrect.");
-    }
   }
-}
+  else {
+      // check whether this username exist
+      let flat = false;
+      let userKey;
+      for (let key in users){
+        if (users[key].email === email){
+          flag = true;
+          userKey = key;
+        }
+      }
+      // if username match with database, then user can login
+      if(flag){
+        //check whether the password matches or not
+        //if the password matches
+        if (bcrypt.compareSync(password, users[userKey].password)){
+          req.session.user_id = users[userKey].id;
+          res.redirect("/urls");
+        } else {
+          res.status(403).send("The password is invalid.")
+        }
+
+      } else { //username match
+        // chcek if password match with database
+        res.status(403).send("The username is invalid.")
+      }//username match with data base
+  } //else bracket where email and password is supply
 })
 
 app.post("/logout", (req, res) => {
@@ -180,26 +197,38 @@ app.get("/register", (req, res) => {
 app.post("/register", (req, res) => {
   let {email, password } = req.body;
 
+  //if the username or email is empty
   if (email === "" || password === ""){
       res.status(400).send("Something is missing! ");
-    } else {};
+  } //if the username or email is not empty
+  else {
+      //check whether this email exists or not
+      var flag = false;
+      for (let key in users){
+        if (users[key].email === email ) {
+          flag = true;
+        }
+      }
+      // if user found
+      if(flag){
+        res.status(403).send("Sorry! This email has been already taken");
 
-  for (let key in users){
-    if (users[key].email === email ) {
-     res.status(400).send("Sorry...username already taken")
-        } else {
-    const hashedpassword = bcrypt.hashSync(password, 10);
-    let userRandomID = generateRandomString();
-          users[userRandomID] = {
+      } else {//user not found
+        //register a new user
+        const hashedpassword = bcrypt.hashSync(password, 10);
+        let userRandomID = generateRandomString();
+        users[userRandomID] = {
           id: userRandomID,
           email: email,
           password: hashedpassword
-          }
-      req.session.user_id = users[userRandomID].id;
-      res.redirect("/urls");
-    }
-  }
-})
+        };
+
+        req.session.user_id = users[userRandomID].id;
+        res.redirect("/urls");
+
+      } //user not found, so register else part
+  } // Else bracket where email and password were supplie
+}) //POST REgister ends here
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
