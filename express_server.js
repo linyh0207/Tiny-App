@@ -157,13 +157,15 @@ app.post("/login", (req, res) => {
       } else {};
 
       for (let key in users) {
-        if (users[key].email === email & bcrypt.compareSync(password, users[key].password)){
+        if (users[key].email === email){
+          if (bcrypt.compareSync(password, users[key].password)){
               req.session.user_id = users[key].id;
-              res.redirect("/");
+              res.redirect("/urls");
       } else {
       res.status(403).send("The username or password is incorrect.");
     }
   }
+}
 })
 
 app.post("/logout", (req, res) => {
