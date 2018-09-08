@@ -32,12 +32,12 @@ const users = {
   "userRandomID": {
     id: "userRandomID",
     email: "user@example.com",
-    password: "purple-monkey-dinosaur"
+    password: bcrypt.hashSync("purple-monkey-dinosaur", 10)
   },
  "user2RandomID": {
     id: "user2RandomID",
     email: "user2@example.com",
-    password: "dishwasher-funk"
+    password: bcrypt.hashSync("dishwasher-funk", 10)
   }
 }
 
@@ -64,7 +64,7 @@ function generateRandomString() {
 
 app.get("/", (req, res) => {
   let templateVars = {
-     username: users[req.session.user_id]};
+    username: users[req.session.user_id]};
   res.render("welcome", templateVars);
 });
 
@@ -132,7 +132,6 @@ app.post("/urls", (req, res) => {
 }
 });
 
-
 app.post("/urls/:id/delete", (req,res) => {
 if (req.session.user_id === urlDatabase[req.params.id].userID){
   delete urlDatabase[req.params.id];
@@ -149,16 +148,11 @@ app.post("/urls/:id", (req, res) => {
 })
 
 app.post("/login", (req, res) => {
-
-
  let {email, password } = req.body;
-
-  //if the username or email is empty
   if (!email || !password ){
     res.status(403).send("Something is missing! ")
   }
   else {
-      // check whether this username exist
       let flat = false;
       let userKey;
       for (let key in users){
@@ -167,22 +161,17 @@ app.post("/login", (req, res) => {
           userKey = key;
         }
       }
-      // if username match with database, then user can login
       if(flag){
-        //check whether the password matches or not
-        //if the password matches
         if (bcrypt.compareSync(password, users[userKey].password)){
           req.session.user_id = users[userKey].id;
           res.redirect("/urls");
         } else {
           res.status(403).send("The password is invalid.")
         }
-
-      } else { //username match
-        // chcek if password match with database
+      } else {
         res.status(403).send("The username is invalid.")
-      }//username match with data base
-  } //else bracket where email and password is supply
+      }
+  }
 })
 
 app.post("/logout", (req, res) => {
@@ -196,25 +185,19 @@ app.get("/register", (req, res) => {
 
 app.post("/register", (req, res) => {
   let {email, password } = req.body;
-
-  //if the username or email is empty
   if (email === "" || password === ""){
       res.status(400).send("Something is missing! ");
-  } //if the username or email is not empty
+  }
   else {
-      //check whether this email exists or not
       var flag = false;
       for (let key in users){
         if (users[key].email === email ) {
           flag = true;
         }
       }
-      // if user found
       if(flag){
         res.status(403).send("Sorry! This email has been already taken");
-
-      } else {//user not found
-        //register a new user
+      } else {
         const hashedpassword = bcrypt.hashSync(password, 10);
         let userRandomID = generateRandomString();
         users[userRandomID] = {
@@ -222,13 +205,12 @@ app.post("/register", (req, res) => {
           email: email,
           password: hashedpassword
         };
-
         req.session.user_id = users[userRandomID].id;
         res.redirect("/urls");
 
-      } //user not found, so register else part
-  } // Else bracket where email and password were supplie
-}) //POST REgister ends here
+      }
+  }
+})
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);

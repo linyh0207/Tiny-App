@@ -11,12 +11,12 @@
     <ol>
     ShortURL:http://localhost:8080/u/<%= shortUrl %> <br/>
     LongURL:<%= urls[shortUrl].longURL %>
-    <a href = '/urls/<%=shortUrl%>'>Edit</a>
+    <a href = '/urls/<%=shortUrl%>'><button type ="submit">Edit</button></a>
     <form method="POST" action="/urls/<%= shortUrl %>/delete">
     <button type="submit">Delete</button>
     </form>
     </ol>
     <% } %>
-     <a href = "http://localhost:8080/urls/new">Create a New Short Link</a>
+     <a href = "http://localhost:8080/urls/new"><button type="submit">Create a New Short Link</button></a>
 </body>
 </html>

@@ -7,7 +7,7 @@
   <header>
     <% include ./partials/_header %>
   </header>
-  <p>ShortURL: <%= shortURL %></p>
+  <p>ShortURL : <%= shortURL %></p>
 
     <form method="POST" action="/urls/<%= shortURL %>">
     <input id="longURL" type="text" name="longURL" placeholder="Enter a new URL ...">
