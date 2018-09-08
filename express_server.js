@@ -189,7 +189,7 @@ app.post("/register", (req, res) => {
       res.status(400).send("Something is missing! ");
   }
   else {
-      var flag = false;
+      let flag = false;
       for (let key in users){
         if (users[key].email === email ) {
           flag = true;
