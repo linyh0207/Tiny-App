@@ -1,21 +1,16 @@
 var express = require("express");
 var app = express();
 var PORT = 8080;
-// var cookieParser = require('cookie-parser')
 var cookieSession = require('cookie-session')
 const bodyParser = require("body-parser");
 const bcrypt = require('bcrypt');
 
 app.use(bodyParser.urlencoded({extended: true}));
-// app.use(cookieParser())
 app.set("view engine", "ejs");
-
-
 app.use(cookieSession({
   name: 'session',
   keys: ['lighthouse'],
 }))
-
 
 
 var urlDatabase = {
@@ -61,18 +56,27 @@ function urlsForUser(id){
 function generateRandomString() {
   var text = "";
   var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  for (var i = 0; i < 6; i++)
+  for (var i = 0; i < 6; i++) {
     text += possible.charAt(Math.floor(Math.random() * possible.length));
+  }
   return text;
 }
 
-
 app.get("/", (req, res) => {
-  if (!req.session.user_id) {
-    res.redirect("/login");
-  }
-  res.redirect("urls")
+  let templateVars = {
+     username: users[req.session.user_id]};
+  res.render("welcome", templateVars);
 });
+
+app.get("/login", (req, res) => {
+  if (req.session.user_id){
+    res.redirect("/urls");
+  } else {
+    let templateVars = {
+    username: req.session.user_id};
+    res.render("login", templateVars);
+  }
+})
 
 app.get("/urls", (req, res) => {
 let loggedIn = urlsForUser(req.session.user_id);
@@ -82,16 +86,18 @@ let loggedIn = urlsForUser(req.session.user_id);
       username: users[req.session.user_id]
     };
     res.render("urls_index", templateVars);
+  } else{
+    res.redirect("/");
   }
-  res.status(403).send("Please log in / register first.")
 });
 
 app.get("/urls/new", (req, res) => {
   if (req.session.user_id){
     let templateVars = {username: users[req.session.user_id]};
     res.render("urls_new", templateVars);
-    }
-  res.redirect("/login");
+  } else{
+    res.redirect("/login");
+  }
 });
 
 app.get("/urls/:id", (req, res) => {
@@ -100,8 +106,9 @@ app.get("/urls/:id", (req, res) => {
       shortURL: req.params.id,
       username: users[req.session.user_id]};
     res.render("urls_show", templateVars);
-  }
+  } else{
   res.status(403).send("Please log in / register first.")
+}
 });
 
 app.get("/u/:id", (req, res) => {
@@ -119,9 +126,10 @@ app.post("/urls", (req, res) => {
       urlDatabase[randomId] = [randomId]
       urlDatabase[randomId].userID = req.session.user_id;
       urlDatabase[randomId].longURL = req.body.longURL;
-    res.redirect("urls");
-  }
+    res.redirect("/urls");
+  } else{
   res.status(403).send("Please log in / register first.");
+}
 });
 
 
@@ -141,23 +149,21 @@ app.post("/urls/:id", (req, res) => {
 })
 
 app.post("/login", (req, res) => {
-  let {email, password } =req.body;
 
-if (!email || !password ){
-    return res.status(403).send("Something is missing! ")
-    }
+  let {email, password } = req.body;
 
- for (let key in users) {
-    if (users[key].email === email) {
-      if (bcrypt.compareSync(password, users[key].password)){
-      // if users[key].password === password) {
-          req.session.user_id = users[key].id;
-          // res.cookie("user_id", users[key].id);
-          return res.redirect("/");
-       }
+  if (!email || !password ){
+    res.status(403).send("Something is missing! ")
+      } else {};
+
+      for (let key in users) {
+        if (users[key].email === email & bcrypt.compareSync(password, users[key].password)){
+              req.session.user_id = users[key].id;
+              res.redirect("/");
+      } else {
+      res.status(403).send("The username or password is incorrect.");
     }
   }
-  res.status(403).send("The username or password is incorrect.");
 })
 
 app.post("/logout", (req, res) => {
@@ -170,36 +176,27 @@ app.get("/register", (req, res) => {
 })
 
 app.post("/register", (req, res) => {
-  let {email, password } =req.body
+  let {email, password } = req.body;
 
   if (email === "" || password === ""){
-    res.status(400).send("Something is missing! ")
-    }
+      res.status(400).send("Something is missing! ");
+    } else {};
 
   for (let key in users){
-      if (users[key].email === email ) {
-        return res.status(400).send("Sorry...username already taken")
-      }
-    }
+    if (users[key].email === email ) {
+     res.status(400).send("Sorry...username already taken")
+        } else {
     const hashedpassword = bcrypt.hashSync(password, 10);
-
     let userRandomID = generateRandomString();
-        users[userRandomID] = {
-        id: userRandomID,
-        email: email,
-        password: hashedpassword
-        }
-console.log(users)
-      req.session.user_id = users[userRandomID];
-      // res.cookie("user_id", users[userRandomID]);
+          users[userRandomID] = {
+          id: userRandomID,
+          email: email,
+          password: hashedpassword
+          }
+      req.session.user_id = users[userRandomID].id;
       res.redirect("/urls");
-})
-
-
-app.get("/login", (req, res) => {
-  let templateVars = {
-   username: req.session.user_id};
-  res.render("login", templateVars);
+    }
+  }
 })
 
 app.listen(PORT, () => {
@@ -211,6 +208,3 @@ app.get("/urls.json", (req, res) => {
 });
 
 
-// app.get("/hello", (req, res) => {
-//   res.send("<html><body>Hello <b>World</b></body></html>\n");
-// });

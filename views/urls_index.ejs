@@ -9,7 +9,8 @@
   </header>
     <% for (let shortUrl in urls) { %>
     <ol>
-    <%= shortUrl %> : <%= urls[shortUrl].longURL %>
+    ShortURL:http://localhost:8080/u/<%= shortUrl %> <br/>
+    LongURL:<%= urls[shortUrl].longURL %>
     <a href = '/urls/<%=shortUrl%>'>Edit</a>
     <form method="POST" action="/urls/<%= shortUrl %>/delete">
     <button type="submit">Delete</button>
