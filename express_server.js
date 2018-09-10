@@ -153,7 +153,7 @@ app.post("/login", (req, res) => {
     res.status(403).send("Something is missing! ")
   }
   else {
-      let flat = false;
+      let flag = false;
       let userKey;
       for (let key in users){
         if (users[key].email === email){
